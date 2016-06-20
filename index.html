@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+ <head>
+ <meta charset="utf-8" />
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.5/react.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.5/react-dom.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
+ <link rel='stylesheet' href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css" />
+ </head>
+ <body>
+   <div id='content' class='container'>
+   </div>
+   <script type='text/babel'>
+    class List extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = { notes: [], complete: 0, nextId: 0 };
+        this.addNote = this.addNote.bind(this);
+        this.notes = this.notes.bind(this);
+      }
+
+      addNote(e) {
+        e.preventDefault();
+        let notes = [{name: this.refs.name.value, complete: false, id: this.state.nextId}, ...this.state.notes ]
+        this.refs.name.value = null;
+        this.setState({ notes: notes, nextId: ++this.state.nextId });
+      }
+
+      notes() {
+        let notes = this.state.notes.map(note => {
+          return(<Note key={`note-${note.id}`} name={note.name} complete={note.complete} id={note.id} />);
+        });
+        return notes;
+      }
+
+      
+      
+
+      render() {
+        return (
+          <div className='center'>
+            <h1>{this.props.title}</h1>
+            <form onSubmit={this.addNote}>
+            <div className='left'>
+              <input type='text' required='true' placeholder='Note Name' ref='name' />
+              <input type='submit' className='btn' value='Add Note' />
+            </div>
+            </form>
+            <div className='row'>
+              {this.notes()}
+            </div>
+          
+          </div>
+        );
+      }
+    };
+
+    class Note extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = { checked: props.complete, style:{} };       
+      }
+
+      render() {
+        let id = `complete-${this.props.id}`;
+        let color = this.state.checked ? 'blue lighten-5' : 'pink lighten-4';
+        return(
+          <div className={`${color} col s5`}>
+            <div className='col s4' style={this.state.style}>
+              {this.props.name}
+            </div>
+            <div className='right'>
+              <input onChange={this.toggleChecked} type='checkbox' id={id} defaultChecked={this.state.checked} />
+              <label htmlFor={id}>Complete?</label>
+            </div>
+              <div className='btn pink lighten-4center' onClick={() => this.props.deleteItem(this.props.id)}>X</div>
+          </div>
+        );
+      }
+    }
+    ReactDOM.render(<List title='Dashboard of Sticky Notes' />, document.getElementById('content'));
+   </script>
+  </body>
+</html>
